@@ -7,20 +7,13 @@
 
 set -e  # Para o script se houver algum erro
 
-# Cores
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-CYAN='\033[0;36m'
-WHITE='\033[1;37m'
-NC='\033[0m' # Sem cor
-
 # Função para limpar e sair em caso de erro
 cleanup_on_error() {
-    echo -e "\n${RED}❌ Erro durante a instalação!${NC}"
-    echo -e "${YELLOW}Por favor, verifique sua conexão e permissões.${NC}"
+    tput setaf 1
+    printf "\n❌ Erro durante a instalação!\n"
+    tput setaf 3
+    printf "Por favor, verifique sua conexão e permissões.\n"
+    tput sgr0
     exit 1
 }
 
@@ -30,8 +23,11 @@ trap cleanup_on_error ERR
 # Função para verificar se está rodando como root
 check_sudo() {
     if [ "$EUID" -eq 0 ]; then 
-        echo -e "${RED}⚠️  Não execute este script como root diretamente!${NC}"
-        echo -e "${YELLOW}Execute como usuário normal. O script usará sudo quando necessário.${NC}"
+        tput setaf 1
+        printf "⚠️  Não execute este script como root diretamente!\n"
+        tput setaf 3
+        printf "Execute como usuário normal. O script usará sudo quando necessário.\n"
+        tput sgr0
         exit 1
     fi
 }
@@ -48,31 +44,40 @@ check_dependencies() {
     done
     
     if [ ${#missing[@]} -ne 0 ]; then
-        echo -e "${RED}❌ Dependências faltando: ${missing[*]}${NC}"
-        echo -e "${YELLOW}Instale-as com: sudo apt install ${missing[*]}${NC}"
+        tput setaf 1
+        printf "❌ Dependências faltando: ${missing[*]}\n"
+        tput setaf 3
+        printf "Instale-as com: sudo apt install ${missing[*]}\n"
+        tput sgr0
         exit 1
     fi
 }
 
 # Função para texto animado
 print_animated() {
-    text="$1"
-    color="$2"
+    local text="$1"
+    local color="$2"
+    tput setaf "$color"
     for ((i=0; i<${#text}; i++)); do
-        echo -n -e "${color}${text:$i:1}${NC}"
+        printf "%s" "${text:$i:1}"
         sleep 0.02
     done
-    echo ""
+    tput sgr0
+    printf "\n"
 }
 
 # Função para barra de progresso
 progress_bar() {
-    echo -n -e "${CYAN}["
+    tput setaf 6
+    printf "["
     for i in {1..30}; do
-        echo -n "="
+        printf "="
         sleep 0.03
     done
-    echo -e "]${NC} ${GREEN}✓${NC}"
+    printf "]"
+    tput setaf 2
+    printf " ✓\n"
+    tput sgr0
 }
 
 # Função para executar comandos com tratamento de erros
@@ -83,112 +88,153 @@ run_command() {
     if eval "$command"; then
         return 0
     else
-        echo -e "\n${RED}❌ Falha: $description${NC}"
+        tput setaf 1
+        printf "\n❌ Falha: %s\n" "$description"
+        tput sgr0
         return 1
     fi
 }
 
 # Banner inicial
 clear
-echo -e "${PURPLE}"
-echo "╔═════════════════════════════════════════╗"
-echo "║                                         ║"
-echo "║      PLAYIT INSTALLER v1.0              ║"
-echo "║      Tunnel Service - Setup             ║"
-echo "║                                         ║"
-echo "║      Script por: ${WHITE}maelldev${PURPLE}                 ║"
-echo "║                                         ║"
-echo "╚═════════════════════════════════════════╝"
-echo -e "${NC}"
-echo ""
-echo -e "${YELLOW}⚡ Este script irá instalar o Playit no seu sistema${NC}"
-echo ""
+tput setaf 5
+printf "╔═════════════════════════════════════════╗\n"
+printf "║                                         ║\n"
+printf "║      PLAYIT INSTALLER v1.0              ║\n"
+printf "║      Tunnel Service - Setup             ║\n"
+printf "║                                         ║\n"
+printf "║      Script por: maelldev               ║\n"
+printf "║                                         ║\n"
+printf "╚═════════════════════════════════════════╝\n"
+tput sgr0
+printf "\n"
+
+tput setaf 3
+printf "⚡ Este script irá instalar o Playit no seu sistema\n"
+tput sgr0
+printf "\n"
 
 # Verificações iniciais
-echo -e "${CYAN}🔍 Verificando sistema...${NC}"
+tput setaf 6
+printf "🔍 Verificando sistema...\n"
+tput sgr0
 check_sudo
 check_dependencies
-echo -e "${GREEN}✓ Sistema compatível${NC}"
-echo ""
+tput setaf 2
+printf "✓ Sistema compatível\n"
+tput sgr0
+printf "\n"
 
-echo -e "${CYAN}Pressione ${WHITE}ENTER${CYAN} para iniciar a instalação...${NC}"
+tput setaf 6
+printf "Pressione "
+tput bold
+printf "ENTER"
+tput sgr0
+tput setaf 6
+printf " para iniciar a instalação...\n"
+tput sgr0
 read -r
 
 clear
-echo -e "${BLUE}════════════════════════════════════════${NC}"
-print_animated "  🚀 INICIANDO INSTALAÇÃO DO PLAYIT" "$GREEN"
-echo -e "${BLUE}════════════════════════════════════════${NC}"
-echo ""
+tput setaf 4
+printf "════════════════════════════════════════\n"
+tput sgr0
+print_animated "  🚀 INICIANDO INSTALAÇÃO DO PLAYIT" 2
+tput setaf 4
+printf "════════════════════════════════════════\n"
+tput sgr0
+printf "\n"
 sleep 1
 
 # Passo 1
-echo -e "${YELLOW}[1/4]${NC} ${WHITE}Adicionando chave GPG do repositório...${NC}"
+tput setaf 3
+printf "[1/4] "
+tput sgr0
+printf "Adicionando chave GPG do repositório...\n"
 run_command "Adicionar chave GPG" \
     "curl -SsL https://playit-cloud.github.io/ppa/key.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/playit.gpg >/dev/null 2>&1"
 progress_bar
-echo ""
+printf "\n"
 sleep 0.5
 
 # Passo 2
-echo -e "${YELLOW}[2/4]${NC} ${WHITE}Adicionando repositório às sources...${NC}"
+tput setaf 3
+printf "[2/4] "
+tput sgr0
+printf "Adicionando repositório às sources...\n"
 run_command "Adicionar repositório" \
     "echo 'deb [signed-by=/etc/apt/trusted.gpg.d/playit.gpg] https://playit-cloud.github.io/ppa/data ./' | sudo tee /etc/apt/sources.list.d/playit-cloud.list >/dev/null 2>&1"
 progress_bar
-echo ""
+printf "\n"
 sleep 0.5
 
 # Passo 3
-echo -e "${YELLOW}[3/4]${NC} ${WHITE}Atualizando lista de pacotes...${NC}"
+tput setaf 3
+printf "[3/4] "
+tput sgr0
+printf "Atualizando lista de pacotes...\n"
 run_command "Atualizar apt" \
     "sudo apt update >/dev/null 2>&1"
 progress_bar
-echo ""
+printf "\n"
 sleep 0.5
 
 # Passo 4
-echo -e "${YELLOW}[4/4]${NC} ${WHITE}Instalando Playit...${NC}"
+tput setaf 3
+printf "[4/4] "
+tput sgr0
+printf "Instalando Playit...\n"
 run_command "Instalar Playit" \
     "sudo apt install playit -y >/dev/null 2>&1"
 progress_bar
-echo ""
+printf "\n"
 sleep 1
 
 # Mensagem de sucesso
 clear
-echo -e "${GREEN}"
-echo "╔═════════════════════════════════════════╗"
-echo "║                                         ║"
-echo "║       ✓ INSTALAÇÃO CONCLUÍDA!           ║"
-echo "║                                         ║"
-echo "║    Playit instalado com sucesso! 🎉     ║"
-echo "║                                         ║"
-echo "║    Script por: maelldev                 ║"
-echo "║                                         ║"
-echo "╚═════════════════════════════════════════╝"
-echo -e "${NC}"
-echo ""
+tput setaf 2
+printf "╔═════════════════════════════════════════╗\n"
+printf "║                                         ║\n"
+printf "║       ✓ INSTALAÇÃO CONCLUÍDA!           ║\n"
+printf "║                                         ║\n"
+printf "║    Playit instalado com sucesso! 🎉     ║\n"
+printf "║                                         ║\n"
+printf "║    Script por: maelldev                 ║\n"
+printf "║                                         ║\n"
+printf "╚═════════════════════════════════════════╝\n"
+tput sgr0
+printf "\n"
 
 # Verificar se Playit foi instalado corretamente
 if command -v playit &> /dev/null; then
-    echo -e "${GREEN}✓ Playit versão: $(playit --version 2>/dev/null || echo 'instalado')${NC}"
+    tput setaf 2
+    printf "✓ Playit instalado com sucesso\n"
+    tput sgr0
 else
-    echo -e "${RED}⚠️  Aviso: Playit pode não ter sido instalado corretamente${NC}"
+    tput setaf 1
+    printf "⚠️  Aviso: Playit pode não ter sido instalado corretamente\n"
+    tput sgr0
     exit 1
 fi
 
-echo ""
-print_animated "🔥 Iniciando Playit em 3 segundos..." "$CYAN"
+printf "\n"
+print_animated "🔥 Iniciando Playit em 3 segundos..." 6
 sleep 1
-echo -e "${CYAN}3...${NC}"
+tput setaf 6
+printf "3...\n"
 sleep 1
-echo -e "${CYAN}2...${NC}"
+printf "2...\n"
 sleep 1
-echo -e "${CYAN}1...${NC}"
+printf "1...\n"
+tput sgr0
 sleep 1
-echo ""
-echo -e "${GREEN}🚀 Executando Playit...${NC}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
+printf "\n"
+tput setaf 2
+printf "🚀 Executando Playit...\n"
+tput setaf 6
+printf "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+tput sgr0
+printf "\n"
 sleep 0.5
 
 # Inicia o Playit
