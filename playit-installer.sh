@@ -3,7 +3,7 @@
 # ==========================================
 # Script de instalação do Playit
 # Criado por: maelldev
-# GitHub: github.com/maellldev
+# GitHub: github.com/maelldev
 # ==========================================
 
 set -e  # Para o script se houver algum erro
@@ -42,14 +42,14 @@ progress_bar() {
 # Banner inicial
 clear
 echo -e "${PURPLE}"
-echo "  ╔═══════════════════════════════════════╗"
-echo "  ║                                       ║"
-echo "  ║     PLAYIT INSTALLER v1.0             ║"
-echo "  ║     Tunnel Service - Setup            ║"
-echo "  ║                                       ║"
-echo "  ║     Script por: ${WHITE}maelldev${PURPLE}              ║"
-echo "  ║                                       ║"
-echo "  ╚═══════════════════════════════════════╝"
+echo "╔═════════════════════════════════════════╗"
+echo "║                                         ║"
+echo "║      PLAYIT INSTALLER v1.0              ║"
+echo "║      Tunnel Service - Setup             ║"
+echo "║                                         ║"
+echo "║      Script por: ${WHITE}maelldev${PURPLE}                 ║"
+echo "║                                         ║"
+echo "╚═════════════════════════════════════════╝"
 echo -e "${NC}"
 echo ""
 echo -e "${YELLOW}⚡ Este script irá instalar o Playit no seu sistema${NC}"
@@ -95,15 +95,15 @@ sleep 1
 # Mensagem de sucesso
 clear
 echo -e "${GREEN}"
-echo "  ╔═══════════════════════════════════════╗"
-echo "  ║                                       ║"
-echo "  ║      ✓ INSTALAÇÃO CONCLUÍDA!          ║"
-echo "  ║                                       ║"
-echo "  ║   Playit instalado com sucesso! 🎉    ║"
-echo "  ║                                       ║"
-echo "  ║   Script por: maelldev                ║"
-echo "  ║                                       ║"
-echo "  ╚═══════════════════════════════════════╝"
+echo "╔═════════════════════════════════════════╗"
+echo "║                                         ║"
+echo "║       ✓ INSTALAÇÃO CONCLUÍDA!           ║"
+echo "║                                         ║"
+echo "║    Playit instalado com sucesso! 🎉     ║"
+echo "║                                         ║"
+echo "║    Script por: maelldev                 ║"
+echo "║                                         ║"
+echo "╚═════════════════════════════════════════╝"
 echo -e "${NC}"
 echo ""
 print_animated "🔥 Iniciando Playit em 3 segundos..." "$CYAN"
